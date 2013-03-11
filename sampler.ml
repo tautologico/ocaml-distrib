@@ -6,32 +6,32 @@
 *)
 
 type distribution =
-  Uniform of float * float
-| DUniform of int * int
-| Gaussian of float * float
-| Bernoulli of float
-| Binomial of int * float
-| Exp of float
+  Uniform of float * float  (* low, high *)
+| DUniform of int * int     (* low, high *)
+| Gaussian of float * float (* mean, variance *)
+| Bernoulli of float        (* rate *)
+| Binomial of int * float   (* number, rate *)
+| Exp of float              (* parameter *)
 
 type basic_sampler =
-    {
-      init: int -> unit;
-      sample_unif: float -> float;
-      sample_unif1: unit -> float;
-    }
+  {
+    init: int -> unit;
+    sample_unif: float -> float;
+    sample_unif1: unit -> float;
+  }
 
 type sampler =
-    {
-      base: basic_sampler;
-      sample: distribution -> float;
-      samples: distribution -> int -> float list;
-    }
+  {
+    base: basic_sampler;
+    sample: distribution -> float;
+    samples: distribution -> int -> float list;
+  }
 
 let pi = 4.0 *. (atan 1.0)
 
 (** Sampler from standard library (or Core) *)
-let std_sampler = { init = Random.init; sample_unif = Random.float;
-                    sample_unif1 = ( fun () -> Random.float 1.0 ); }
+let stdsmp = { init = Random.init; sample_unif = Random.float;
+               sample_unif1 = ( fun () -> Random.float 1.0 ); }
 
 let sample_exp smp param =
   let u = smp.sample_unif1 () in
