@@ -7,6 +7,16 @@
 
 *)
 
+(***
+
+  TODO
+  
+  - init
+  - print/export in format for use with R
+  - multiply by scalar
+
+***)
+
 (* A matrix of floats. 
    The matrix is stored as a linear array of floats in row-major order *)
 type t = 
