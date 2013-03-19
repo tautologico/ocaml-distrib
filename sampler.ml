@@ -5,7 +5,6 @@
 
 *)
 
-open Matvec
 
 type distribution =
   Uniform of float * float  (* low, high *)
@@ -14,7 +13,7 @@ type distribution =
 | Bernoulli of float        (* rate *)
 | Binomial of int * float   (* number, rate *)
 | Exp of float              (* parameter *)
-| MVNormal of float array * float array array (* mean, covariance matrix *)
+| MVNormal of Matrix.t * Matrix.t  (* mean, covariance matrix *)
 
 type basic_sampler =
   {
@@ -50,8 +49,7 @@ let sample_stdnormal_boxmuller smp =
 
 let stdnorm_samples smp num =
   let res = Array.init num (fun i -> sample_stdnormal_boxmuller smp) in
-  res
-
+  Matrix.vector_from_array res
 
 let r_output arr =
   print_string "c(";
@@ -61,9 +59,8 @@ let r_output arr =
 (** Sample from a multivariate normal distribution with mean vector 
     mu and covariance matrix sigma *)
 let sample_mvnorm smp mu sigma =
-  let n = Array.length mu in         (* dimension of the MV normal *)
-  let cholfact = cholesky sigma in
-  let nsamples = stdnorm_samples smp n in (* stdnormal samples?? *)
-  let res = matvec_mult cholfact nsamples in
-  vector_displace res mu;
-  res
+  let n = Matrix.vector_size mu in         (* dimension of the MV normal *)
+  let cholfact = Matrix.cholesky sigma in
+  let nsamples = stdnorm_samples smp n in  (* stdnormal samples?? *)
+  let res = Matrix.mult cholfact nsamples in
+  Matrix.add res mu
