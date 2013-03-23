@@ -19,8 +19,7 @@
 
 (* A matrix of floats. 
    The matrix is stored as a linear array of floats in row-major order *)
-type t = 
-  {
+type t = {
     rows: int;
     cols: int;
     entries: float array; 
@@ -118,9 +117,11 @@ let exists ~p m =
 let all ~p m = 
   not (exists (fun x -> not (p x)) m)
 
+(* TODO: change to check for relative difference instead of absolute *)
 let eq_eps ?(eps=0.001) m1 m2 = 
   let dif = sub m1 m2 in
   all ~p:(fun x -> abs_float x <= eps) dif 
+
 
 (** Cholesky decomposition. Given a symmetric positive definite matrix A, 
     return an upper-triangular matrix U such that A = U'U. 
@@ -157,3 +158,7 @@ let cholesky a =
     res
 
 
+(* convenience operators for local open *)
+let ( + ) m1 m2 = add m1 m2
+let ( - ) m1 m2 = sub m1 m2
+let ( * ) m1 m2 = mult m1 m2

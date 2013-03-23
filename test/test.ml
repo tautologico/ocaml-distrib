@@ -21,6 +21,23 @@ type 'a test_batch =
     }
 
 
+let create_case name ~code ~test = 
+  { cname=name; testcode=code; passtest=test }
+
+let create_case_eq name ~code ~res = 
+  { cname=name; testcode=code; passtest=(fun r -> r = res)}
+
+let create_case_exn name ~code exn = 
+  { cname = name; 
+    testcode = (fun () -> 
+      try 
+        let r = code () in false 
+      with e -> if e = exn then true else false); 
+    passtest = (fun r -> r)}
+
+let create_batch name cases = 
+  { bname=name; cases=cases }
+
 let run_case case = 
   let r = case.testcode () in
   case.passtest r 
