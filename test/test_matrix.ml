@@ -13,6 +13,19 @@ let case_eps name ~code ~res =
   Test.create_case name code (Matrix.eq_eps res)
 
 
+(* Tests for creation *)
+let id3 = Matrix.from_array 3 3 
+  [| 1.0; 0.0; 0.0; 
+     0.0; 1.0; 0.0; 
+     0.0; 0.0; 1.0 |]
+
+let id4 = Matrix.from_array 4 4 
+  [| 1.0; 0.0; 0.0; 0.0; 
+     0.0; 1.0; 0.0; 0.0;
+     0.0; 0.0; 1.0; 0.0;
+     0.0; 0.0; 0.0; 1.0  |]
+
+
 (* Tests for simple operations *)
 let m1 = Matrix.from_array 2 2
   [| 1.0; 2.0;
@@ -75,6 +88,12 @@ let chol_sigma2 = Matrix.from_array 4 4
      0.0;     0.0;       0.0;   1.01533 |]
 
 
+let creation = Test.create_batch "Creation"
+    [
+     case_eps "id3" ~code:(fun () -> Matrix.identity 3) ~res:id3;
+     case_eps "id4" ~code:(fun () -> Matrix.identity 4) ~res:id4
+    ]
+
 let basic_ops = Test.create_batch "Basic operations" 
     [
      case_eps "test_add" ~code:(fun () -> Matrix.add m1 m2) ~res:m1_plus_m2; 
@@ -100,4 +119,4 @@ let chol_batch = Test.create_batch "Cholesky decomposition"
 (* Run all test batches *)
 let () = 
   Test.runner [errors];
-  Test.runner [basic_ops; chol_batch]
+  Test.runner [creation; basic_ops; chol_batch]

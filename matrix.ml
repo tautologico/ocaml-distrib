@@ -38,6 +38,12 @@ let from_array ~rows ~cols a =
   if Array.length a != rows*cols then raise Incompatible_dimensions
   else { rows=rows; cols=cols; entries=a }
 
+let init_vector n f = 
+  { rows=n; cols=1; entries=Array.init n f }
+
+let identity n = 
+  { rows=n; cols=n; entries=Array.init (n*n) (fun i -> if i mod (n+1) = 0 then 1.0 else 0.0)}
+
 let rows m = m.rows
 
 let columns m = m.cols
@@ -156,6 +162,15 @@ let cholesky a =
       done
     done;
     res
+
+(* printing and export functions for R interop *)
+let print_vector_r v =
+  let printer i x = 
+    if i < v.rows-1 then ( print_float x; print_string ", " )
+    else print_float x in 
+  print_string "c(";
+  Array.iteri printer v.entries;
+  print_endline ")"
 
 
 (* convenience operators for local open *)
