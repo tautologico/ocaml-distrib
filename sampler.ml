@@ -32,8 +32,11 @@ type sampler =
 let pi = 4.0 *. (atan 1.0)
 
 (** Sampler from standard library (or Core) *)
-let stdsmp = { init = Random.init; sample_unif = Random.float;
-               sample_unif1 = ( fun () -> Random.float 1.0 ); }
+let stdsmp = { 
+  init = Random.init; 
+  sample_unif = Random.float;
+  sample_unif1 = ( fun () -> Random.float 1.0 ); 
+}
 
 let sample_exp smp param =
   let u = smp.sample_unif1 () in
@@ -62,5 +65,5 @@ let sample_mvnorm smp mu sigma =
   let n = Matrix.vector_size mu in         (* dimension of the MV normal *)
   let cholfact = Matrix.cholesky sigma in
   let nsamples = stdnorm_samples smp n in  (* stdnormal samples?? *)
-  let res = Matrix.mult cholfact nsamples in
-  Matrix.add res mu
+  let res = Matrix.( cholfact * nsamples ) in
+  Matrix.( res + mu )
