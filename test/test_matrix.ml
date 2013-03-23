@@ -40,6 +40,10 @@ let m3 = Matrix.from_array ~rows:3 ~cols:2
       4.2;   7.3; 
      1.23;  -9.18 |]
 
+let v1 = Matrix.vector_from_array [| 1.2; 4.2 |]
+
+let v2 = Matrix.vector_from_array [| 5.6; 11.2 |]
+
 let m1_plus_m2 = Matrix.from_array 2 2
   [| 3.0; 5.0;
      4.0; 7.0 |]
@@ -60,6 +64,10 @@ let m3_times_m2 = Matrix.from_array ~rows:3 ~cols:2
   [|  13.75; 21.5;
       26.65; 41.8;
      -20.49; -33.03 |]
+
+let m1_times_v1 = Matrix.vector_from_array [| 9.6; 14.4 |]
+
+let m3_times_v2 = Matrix.vector_from_array [| 53.2; 105.28; -95.928 |]
 
 (* two symmetric positive definite matrices *)
 let sigma1 = Matrix.from_array 3 3 
@@ -100,7 +108,9 @@ let basic_ops = Test.create_batch "Basic operations"
      case_eps "test_sub" ~code:(fun () -> Matrix.sub m2 m1) ~res:m2_minus_m1;
      case_eps "test_mult1" ~code:(fun () -> Matrix.mult m1 m2) ~res:m1_times_m2;
      case_eps "test_mult2" ~code:(fun () -> Matrix.mult m2 m1) ~res:m2_times_m1;
-     case_eps "test_mult3" ~code:(fun () -> Matrix.mult m3 m2) ~res:m3_times_m2
+     case_eps "test_mult3" ~code:(fun () -> Matrix.mult m3 m2) ~res:m3_times_m2;
+     case_eps "test_mult4" ~code:(fun () -> Matrix.mult m1 v1) ~res:m1_times_v1;
+     case_eps "test_mult5" ~code:(fun () -> Matrix.mult m3 v2) ~res:m3_times_v2
     ]
 
 let errors = Test.create_batch "Wrong calls"

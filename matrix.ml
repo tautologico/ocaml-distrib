@@ -76,8 +76,8 @@ let mult m1 m2 =
   else
     let res = create m1.rows m2.cols in
     let sum = ref 0.0 in
-    for i = 0 to m1.rows-1 do
-      for j = 0 to m1.cols-1 do
+    for i = 0 to res.rows-1 do
+      for j = 0 to res.cols-1 do
         sum := 0.0;
         for k = 0 to m1.cols-1 do
           sum := !sum +. (get m1 i k) *. (get m2 k j)
