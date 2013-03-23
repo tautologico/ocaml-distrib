@@ -7,13 +7,6 @@
 
 *)
 
-(***
-
-  TODO
-
-    - statistical tests for goodness-of-fit
-
-***)
 
 type uni =
     Uniform of float * float  (* low, high *)
