@@ -7,12 +7,18 @@
 
 *)
 
+(***
 
+  TODO
+
+    - statistical tests for goodness-of-fit
+
+***)
 
 type uni =
     Uniform of float * float  (* low, high *)
   | DUniform of int * int     (* low, high *)
-  | Normal of float * float   (* mean, variance *)
+  | Normal of float * float   (* mean, stddev *)
   | Bernoulli of float        (* rate *)
   | Binomial of int * float   (* number, rate *)
   | Exp of float              (* parameter *)
@@ -29,13 +35,6 @@ type rng = {
     sample01: unit -> float;  (* uniform sampling on interval 0-1 *)
   }
 
-(*
-type sampler = {
-    base: rng;
-    sample: t -> float;
-    samples: t -> int -> float list;
-  }
-*)
 
 let pi = 4.0 *. (atan 1.0)
 
@@ -82,6 +81,10 @@ let sample_stdnormal_boxmuller3 rng =
   let u = rng.sample01 () in
   if u <= 0.5 then y1 else -.y1
 
+let sample_normal_boxmuller3 ?(rng=stdrng) mu sigma = 
+  let z = sample_stdnormal_boxmuller3 rng in
+  (sigma *. z) +. mu
+
 let stdnorm_samples smp num =
   let res = Array.init num (fun i -> sample_stdnormal_boxmuller3 smp) in
   Matrix.vector_from_array res
@@ -91,19 +94,18 @@ let sample_uni ?(rng=stdrng) d =
     Uniform (low, high) -> let off = high -. low in (rng.sample off) +. off
   | Exp lambda -> sample_exp ~rng lambda 
   | Bernoulli rate -> sample_bernoulli ~rng rate
-  | _ -> 0.0  (* FIX *)
+  | Normal (mu, sigma) -> sample_normal_boxmuller3 ~rng mu sigma
+  | _ -> failwith "Not implemented"  (* FIX *)
 
-(* TODO: move to matrix.ml *)
-let r_output arr =
-  print_string "c(";
-  Array.iter (fun n -> print_float n; print_string ", ") arr;
-  print_endline ")"
+let samples_uni_vec ?(rng=stdrng) d n = 
+  Matrix.init_vector n (fun i -> sample_uni d)
 
 (** Sample from a multivariate normal distribution with mean vector 
     mu and covariance matrix sigma *)
-let sample_mvnorm smp mu sigma =
+let sample_mvnorm ?(rng=stdrng) mu sigma =
   let n = Matrix.vector_size mu in         (* dimension of the MV normal *)
   let cholfact = Matrix.cholesky sigma in
-  let nsamples = stdnorm_samples smp n in  (* stdnormal samples?? *)
+  let nsamples = stdnorm_samples rng n in
   let res = Matrix.( cholfact * nsamples ) in
   Matrix.( res + mu )
+
