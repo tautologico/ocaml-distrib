@@ -31,7 +31,7 @@ let create_case_exn name ~code exn =
   { cname = name; 
     testcode = (fun () -> 
       try 
-        let r = code () in false 
+        let _ = code () in false 
       with e -> if e = exn then true else false); 
     passtest = (fun r -> r)}
 
