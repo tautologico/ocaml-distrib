@@ -181,6 +181,15 @@ let print_vector_r v =
   Array.iteri printer v.entries;
   print_endline ")"
 
+(* print row r of matrix m as an R vector *)
+let print_row_r m r = 
+  let ix = r * m.cols in
+  print_string "c(";
+  for i = 0 to m.cols-2 do
+    Printf.printf "%f, " m.entries.(i+ix)
+  done;
+  Printf.printf "%f" m.entries.(ix+m.cols-1);
+  print_endline ")"
 
 (* convenience operators for local open *)
 let ( + ) m1 m2 = add m1 m2
