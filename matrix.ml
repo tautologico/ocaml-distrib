@@ -61,6 +61,15 @@ let set m row col value =
 let vector_from_array a = 
   { rows=Array.length a; cols=1; entries=a } 
 
+let copy m1 = 
+  { rows=m1.rows; cols=m1.cols; entries=Array.copy m1.entries }
+
+(* copy v as a column c in matrix m *)
+let copy_vec_mat_col v m c = 
+  for i = 0 to m.rows-1 do
+    set m i c (v.entries.(i))
+  done
+
 (* TODO: adjustable format for printing entries *)
 let print m = 
   for i = 0 to m.rows-1 do

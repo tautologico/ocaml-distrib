@@ -95,6 +95,11 @@ let chol_sigma2 = Matrix.from_array 4 4
      0.0;     0.0;   1.11739; -0.132962;
      0.0;     0.0;       0.0;   1.01533 |]
 
+(* copy results *)
+let sigma1_cp_m3_times_v2 = Matrix.from_array 3 3 
+  [|    53.2; 0.5; 0.5;
+      105.28; 2.0; 0.3;
+     -95.928; 0.3; 1.5   |]
 
 let creation = Test.create_batch "Creation"
     [
@@ -126,7 +131,20 @@ let chol_batch = Test.create_batch "Cholesky decomposition"
      case_eps "sigma2" ~code:(fun () -> Matrix.cholesky sigma2) ~res:chol_sigma2
     ]
 
+let copy_batch = Test.create_batch "Copy vector"
+    [
+     case_eps "copy sigma1" ~code:(fun () -> Matrix.copy sigma1) ~res:sigma1;
+     case_eps "copy vec over sigma1" 
+       ~code:(fun () -> 
+         let m = Matrix.copy sigma1 in 
+         let () = Matrix.copy_vec_mat_col m3_times_v2 m 0 in
+         m)
+       ~res:sigma1_cp_m3_times_v2
+    ]
+
 (* Run all test batches *)
 let () = 
   Test.runner [errors];
-  Test.runner [creation; basic_ops; chol_batch]
+  Test.runner [creation; basic_ops; chol_batch; copy_batch]
+
+
