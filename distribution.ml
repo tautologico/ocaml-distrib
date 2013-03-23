@@ -102,3 +102,15 @@ let sample_mvnorm ?(rng=stdrng) mu sigma =
   let res = Matrix.( cholfact * nsamples ) in
   Matrix.( res + mu )
 
+let samples_mvnorm ?(rng=stdrng) mu sigma ns = 
+  let res = Matrix.create (Matrix.vector_size mu) ns in
+  let rec fill_loop i = 
+    if i = ns then ()
+    else 
+      let s = sample_mvnorm ~rng mu sigma in
+      Matrix.copy_vec_mat_col s res i;
+      fill_loop (i+1) in
+  fill_loop 0;
+  res
+
+
