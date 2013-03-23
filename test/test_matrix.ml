@@ -7,18 +7,7 @@
 
 *)
 
-type ('a, 'b) test_case = 
-{
-  cname: string;
-  input: 'a;
-  output: 'b;
-}
-
-type ('a, 'b) test_batch = 
-{
-  bname: string;
-  cases: ('a, 'b) test_case list;
-}
+open Test
 
 (* Tests for simple operations *)
 let m1 = Matrix.from_array 2 2
@@ -72,18 +61,36 @@ let chol_sigma2 = Matrix.from_array 4 4
     0.0;     0.0;   1.11739; -0.132962;
     0.0;     0.0;       0.0;   1.01533|]
   
-let test_cholesky () = 
-  let test_case name input output = 
-    let res = cholesky input in
-    Matrix.eq_eps res output in
-  test_case "sigma1" sigma1 cholesky_sigma1
 
 
-let unpack_inputs x = x
+let ops_c1 = { 
+  cname = "test_add"; 
+  testcode = (fun () -> Matrix.add m1 m2);
+  passtest = (Matrix.eq_eps m1_plus_m2);
+}
 
-let test_basic_ops () = 
-  let test_add_case case = 
-    let in1, in2 = case.input in
-    let res = Matrix.add in1 in2 in
-    Matrix.eq_eps res case.output in
-  0
+let ops_c2 = { 
+  cname = "test_sub";
+  testcode = (fun () -> Matrix.sub m2 m1);
+  passtest = (Matrix.eq_eps m2_minus_m1);
+}
+
+let ops_c3 = {
+  cname = "test_mult1";
+  testcode = (fun () -> Matrix.mult m1 m2);
+  passtest = (Matrix.eq_eps m1_times_m2);
+}
+
+let ops_c4 = {
+  cname = "test_mult2";
+  testcode = (fun () -> Matrix.mult m2 m1);
+  passtest = (Matrix.eq_eps m2_times_m1);
+}
+
+let basic_ops = {
+  bname = "Basic operations";
+  cases = [ops_c1; ops_c2; ops_c3; ops_c4];
+}
+
+let () = 
+  runner [basic_ops]
