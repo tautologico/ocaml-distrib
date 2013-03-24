@@ -25,6 +25,11 @@ let id4 = Matrix.from_array 4 4
      0.0; 0.0; 1.0; 0.0;
      0.0; 0.0; 0.0; 1.0  |]
 
+let init1 = Matrix.from_array 3 3 
+  [|   1.0;   2.0;   3.0;
+     101.0; 102.0; 103.0;
+     201.0; 202.0; 203.0  |]
+
 
 (* Tests for simple operations *)
 let m1 = Matrix.from_array 2 2
@@ -101,21 +106,34 @@ let sigma1_cp_m3_times_v2 = Matrix.from_array 3 3
       105.28; 2.0; 0.3;
      -95.928; 0.3; 1.5   |]
 
+(* results of multiplication by scalar *)
+let sigma1x2 = Matrix.from_array 3 3 
+  [| 2.0; 1.0; 1.0;
+     1.0; 4.0; 0.6;
+     1.0; 0.6; 3.0 |]
+
+
+(* test batches *)
 let creation = Test.create_batch "Creation"
     [
      case_eps "id3" ~code:(fun () -> Matrix.identity 3) ~res:id3;
-     case_eps "id4" ~code:(fun () -> Matrix.identity 4) ~res:id4
+     case_eps "id4" ~code:(fun () -> Matrix.identity 4) ~res:id4;
+     case_eps "init1" 
+       ~code:(fun () -> Matrix.init 3 3 
+                        (fun r c -> 100.0 *. (float r) +. (float c) +. 1.0)) 
+       ~res:init1
     ]
 
 let basic_ops = Test.create_batch "Basic operations" 
     [
-     case_eps "test_add" ~code:(fun () -> Matrix.add m1 m2) ~res:m1_plus_m2; 
-     case_eps "test_sub" ~code:(fun () -> Matrix.sub m2 m1) ~res:m2_minus_m1;
-     case_eps "test_mult1" ~code:(fun () -> Matrix.mult m1 m2) ~res:m1_times_m2;
-     case_eps "test_mult2" ~code:(fun () -> Matrix.mult m2 m1) ~res:m2_times_m1;
-     case_eps "test_mult3" ~code:(fun () -> Matrix.mult m3 m2) ~res:m3_times_m2;
-     case_eps "test_mult4" ~code:(fun () -> Matrix.mult m1 v1) ~res:m1_times_v1;
-     case_eps "test_mult5" ~code:(fun () -> Matrix.mult m3 v2) ~res:m3_times_v2
+     case_eps "add" ~code:(fun () -> Matrix.add m1 m2) ~res:m1_plus_m2; 
+     case_eps "sub" ~code:(fun () -> Matrix.sub m2 m1) ~res:m2_minus_m1;
+     case_eps "mult1" ~code:(fun () -> Matrix.mult m1 m2) ~res:m1_times_m2;
+     case_eps "mult2" ~code:(fun () -> Matrix.mult m2 m1) ~res:m2_times_m1;
+     case_eps "mult3" ~code:(fun () -> Matrix.mult m3 m2) ~res:m3_times_m2;
+     case_eps "mult4" ~code:(fun () -> Matrix.mult m1 v1) ~res:m1_times_v1;
+     case_eps "mult5" ~code:(fun () -> Matrix.mult m3 v2) ~res:m3_times_v2;
+     case_eps "scmult" ~code:(fun () -> Matrix.scmult sigma1 2.0) ~res:sigma1x2
     ]
 
 let errors = Test.create_batch "Wrong calls"

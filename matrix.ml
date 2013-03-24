@@ -38,6 +38,9 @@ let from_array ~rows ~cols a =
   if Array.length a != rows*cols then raise Incompatible_dimensions
   else { rows=rows; cols=cols; entries=a }
 
+let init ~rows ~cols ~f = 
+  { rows=rows; cols=cols; entries=Array.init (rows*cols) (fun i -> f (i/cols) (i mod cols))}
+
 let init_vector n f = 
   { rows=n; cols=1; entries=Array.init n f }
 
@@ -70,16 +73,8 @@ let copy_vec_mat_col v m c =
     set m i c (v.entries.(i))
   done
 
-(* TODO: adjustable format for printing entries *)
-let print m = 
-  for i = 0 to m.rows-1 do
-    print_string "|";
-    for j = 0 to m.cols-1 do
-      Printf.printf " %6.5f" (get m i j)
-    done;
-    print_endline " |"
-  done
 
+(* operations *)
 let mult m1 m2 = 
   if m1.cols != m2.rows then raise Incompatible_dimensions
   else
@@ -96,6 +91,9 @@ let mult m1 m2 =
     done;
     res
 
+let scmult m x = 
+  init ~rows:m.rows ~cols:m.cols ~f:(fun r c -> (get m r c) *. x)
+  
 let array_map2 ~f a1 a2 = 
   Array.mapi (fun i x -> f x a2.(i)) a1
 
@@ -171,6 +169,16 @@ let cholesky a =
       done
     done;
     res
+
+(* TODO: adjustable format for printing entries *)
+let print m = 
+  for i = 0 to m.rows-1 do
+    print_string "|";
+    for j = 0 to m.cols-1 do
+      Printf.printf " %6.5f" (get m i j)
+    done;
+    print_endline " |"
+  done
 
 (* printing and export functions for R interop *)
 let print_vector_r v =
