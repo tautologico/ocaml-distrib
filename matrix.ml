@@ -73,6 +73,12 @@ let copy_vec_mat_col v m c =
     set m i c (v.entries.(i))
   done
 
+(* copy v as a row r in matrix m *)
+let copy_vec_mat_row v m r = 
+  let ix = r * m.cols in
+  for i = 0 to m.cols-1 do
+      m.entries.(ix + i) <- v.entries.(i)
+  done
 
 (* operations *)
 let mult m1 m2 = 

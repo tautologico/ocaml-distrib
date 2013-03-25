@@ -101,10 +101,15 @@ let chol_sigma2 = Matrix.from_array 4 4
      0.0;     0.0;       0.0;   1.01533 |]
 
 (* copy results *)
-let sigma1_cp_m3_times_v2 = Matrix.from_array 3 3 
+let sigma1_cpcol_m3_times_v2 = Matrix.from_array 3 3 
   [|    53.2; 0.5; 0.5;
       105.28; 2.0; 0.3;
      -95.928; 0.3; 1.5   |]
+
+let sigma1_cprow_m3_times_v2 = Matrix.from_array 3 3 
+  [|  1.0;    0.5;     0.5;
+     53.2; 105.28; -95.928;
+      0.5;    0.3;     1.5  |]
 
 (* results of multiplication by scalar *)
 let sigma1x2 = Matrix.from_array 3 3 
@@ -152,12 +157,18 @@ let chol_batch = Test.create_batch "Cholesky decomposition"
 let copy_batch = Test.create_batch "Copy vector"
     [
      case_eps "copy sigma1" ~code:(fun () -> Matrix.copy sigma1) ~res:sigma1;
-     case_eps "copy vec over sigma1" 
+     case_eps "cp vec sigma1 col" 
        ~code:(fun () -> 
          let m = Matrix.copy sigma1 in 
          let () = Matrix.copy_vec_mat_col m3_times_v2 m 0 in
          m)
-       ~res:sigma1_cp_m3_times_v2
+       ~res:sigma1_cpcol_m3_times_v2;
+     case_eps "cp vec sigma1 row" 
+       ~code:(fun () -> 
+         let m = Matrix.copy sigma1 in 
+         let () = Matrix.copy_vec_mat_row m3_times_v2 m 1 in
+         m)
+       ~res:sigma1_cprow_m3_times_v2
     ]
 
 (* Run all test batches *)
