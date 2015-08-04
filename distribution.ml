@@ -84,7 +84,7 @@ let stdnorm_samples smp num =
 
 let sample_uni ?(rng=stdrng) d = 
   match d with
-    Uniform (low, high) -> let off = high -. low in (rng.sample off) +. off
+    Uniform (low, high) -> let off = high -. low in (rng.sample off) +. low
   | Exp lambda -> sample_exp ~rng lambda 
   | Bernoulli rate -> sample_bernoulli ~rng rate
   | Normal (mu, sigma) -> sample_normal_boxmuller3 ~rng mu sigma
