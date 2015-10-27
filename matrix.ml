@@ -28,11 +28,11 @@ type t = {
 exception Incompatible_dimensions
 
 let create ?(initval=0.0) ~rows ~cols = 
-  { rows=rows; cols=cols; entries=Array.create (rows*cols) initval }
+  { rows=rows; cols=cols; entries=Array.make (rows*cols) initval }
 
 (* a vector is just a column-matrix *)
 let create_vector ?(initval=0.0) size = 
-  { rows=size; cols=1; entries=Array.create size initval }
+  { rows=size; cols=1; entries=Array.make size initval }
 
 let from_array ~rows ~cols a = 
   if Array.length a != rows*cols then raise Incompatible_dimensions
